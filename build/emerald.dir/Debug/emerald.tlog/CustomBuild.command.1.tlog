@@ -1,0 +1,10 @@
+^D:\VSCODE STUFF\COMPILER\CMAKELISTS.TXT
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" "-SD:/VSCODE STUFF/compiler" "-BD:/VSCODE STUFF/compiler/build" --check-stamp-file "D:/VSCODE STUFF/compiler/build/CMakeFiles/generate.stamp"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

@@ -1,0 +1,10 @@
+^D:\VSCODE STUFF\COMPILER\BUILD\CMAKEFILES\07EBA50707B9273EDCFEFDDE6A086C42\GENERATE.STAMP.RULE
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" "-SD:/VSCODE STUFF/compiler" "-BD:/VSCODE STUFF/compiler/build" --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file "D:/VSCODE STUFF/compiler/build/emerald.sln"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
