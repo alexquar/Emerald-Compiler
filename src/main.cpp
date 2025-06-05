@@ -3,10 +3,10 @@
 #include <sstream>
 #include <optional>
 #include <vector>
-
+#include "tokenization.hpp"
 // Define an enumeration for token options
 enum class TokenType {
-    _return, 
+    exit, 
     int_lit, 
     semi
 };
@@ -33,8 +33,8 @@ for(int i = 0; i < str.length(); i++){
             i++;
         }
         i--;
-        if(buf == "return"){
-            tokens.push_back(Token{TokenType::_return, std::nullopt});
+        if(buf == "exit"){
+            tokens.push_back(Token{TokenType::exit, std::nullopt});
             buf.clear();
             continue;
         } else {
@@ -68,7 +68,7 @@ std::string tokens_to_asm(const std::vector<Token>& tokens){
     output << "global _start\n _start:\n";
     for(int i=0 ; i <tokens.size(); i++){
         const Token& token = tokens[i];
-        if(token.type == TokenType::_return){
+        if(token.type == TokenType::exit){
            if(i+1 < tokens.size() && tokens[i+1].type == TokenType::int_lit){
                if(i+2 < tokens.size() && tokens[i+2].type == TokenType::semi){
                 output << "    mov rax, 60\n";
