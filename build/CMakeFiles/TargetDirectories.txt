@@ -1,0 +1,3 @@
+D:/VSCODE STUFF/compiler/build/CMakeFiles/emerald.dir
+D:/VSCODE STUFF/compiler/build/CMakeFiles/ALL_BUILD.dir
+D:/VSCODE STUFF/compiler/build/CMakeFiles/ZERO_CHECK.dir
