@@ -4,64 +4,7 @@
 #include <optional>
 #include <vector>
 #include "tokenization.hpp"
-// Define an enumeration for token options
-enum class TokenType {
-    exit, 
-    int_lit, 
-    semi
-};
-
-// Define a structure to represent a token
-struct Token {
-    TokenType type;
-    std::optional<std::string> value;
-};
-
-// Function to tokenize the input string
-std::vector<Token> tokenize(const std::string&  str){
-//vector to store tokens
-std::vector<Token> tokens;
-    //buffer to store current tokem
-std::string buf;
-for(int i = 0; i < str.length(); i++){
-    char c = str.at(i);
-    if(std::isalpha(c)){
-        buf.push_back(c);
-        i++;
-        while(std::isalnum(str.at(i))){
-            buf.push_back(str.at(i));
-            i++;
-        }
-        i--;
-        if(buf == "exit"){
-            tokens.push_back(Token{TokenType::exit, std::nullopt});
-            buf.clear();
-            continue;
-        } else {
-            std::cerr << "Error: Unknown identifier '" << buf << "' at position " << i - buf.length() << std::endl;
-            exit(EXIT_FAILURE);
-        }
-} else if(std::isspace(c)){
-        continue;
-} else if(std::isdigit(c)){
-    buf.push_back(c);
-    i++;
-    while(std::isdigit(str.at(i))){
-        buf.push_back(str.at(i));
-        i++;
-    }
-    i--;
-    tokens.push_back(Token{TokenType::int_lit, buf});
-    buf.clear();
-} else if(c==';'){
-    tokens.push_back(Token{TokenType::semi, std::nullopt});
-} else {
-    std::cerr << "Error: Unknown character '" << c << "' at position " << i << std::endl;
-    exit(EXIT_FAILURE);
-}
-}
-return tokens;
-}
+#include "token.hpp"
 
 std::string tokens_to_asm(const std::vector<Token>& tokens){
     std::stringstream output;
@@ -101,8 +44,9 @@ int main( int argc, char* argv[] ) {
     cont << file.rdbuf();
     contents = cont.str();
     }
+    Tokenizer tokenizer(std::move(contents)); 
     // Tokenize the contents of the file
-    std::vector<Token> tokens = tokenize(contents);
+    std::vector<Token> tokens = tokenizer.tokenize();
     {
         std::fstream file("../out.asm", std::ios::out);
         file << tokens_to_asm(tokens);
