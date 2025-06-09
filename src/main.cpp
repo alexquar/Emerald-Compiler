@@ -5,7 +5,7 @@
 #include <vector>
 #include "tokenization.hpp"
 #include "token.hpp"
-
+#include "parser.h"
 std::string tokens_to_asm(const std::vector<Token>& tokens){
     std::stringstream output;
     output << "global _start\n _start:\n";

@@ -6,7 +6,7 @@ class Tokenizer {
     private:
         const std::string m_src;
         int m_index = 0;
-        std::optional<char> peak(int count = 0) const {
+        inline std::optional<char> peak(int count = 0) const {
             if(m_index + count >= m_src.length()) {
                 return std::nullopt; // Out of bounds
             }
@@ -20,7 +20,7 @@ class Tokenizer {
     public:
         inline explicit Tokenizer(const std::string& src): m_src(std::move(src)) {}
 
-        std::vector<Token> tokenize() {
+        inline std::vector<Token> tokenize() {
             std::vector<Token> tokens;
             std::string buf;
 
