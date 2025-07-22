@@ -46,6 +46,11 @@
         "xmemory": "cpp",
         "xstddef": "cpp",
         "xtr1common": "cpp",
-        "xutility": "cpp"
-    }
+        "xutility": "cpp",
+        "list": "cpp",
+        "unordered_map": "cpp",
+        "variant": "cpp",
+        "xhash": "cpp"
+    },
+    "C_Cpp.errorSquiggles": "enabled"
 }
