@@ -13,7 +13,7 @@ public:
     {
         std::byte* offset = m_offset;
         m_offset += sizeof(T);
-        return offset;
+        return static_cast<T*>(offset);
     }
     inline ArenaAllocator(const ArenaAllocator& other) = delete;
     inline ArenaAllocator& operator=(const ArenaAllocator& other) = delete;

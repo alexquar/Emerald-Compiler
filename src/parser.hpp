@@ -66,14 +66,21 @@ public:
     {
     }
 
-    std::optional<NodeExpr> parse_expr()
+    std::optional<NodeExpr*> parse_expr()
     {
         if (peek().has_value() && peek().value().type == TokenType::int_lit) {
-            //next code goes here
-            return NodeExpr{ NodeExprIntLit{ consume() } };
+            auto node_expr_int_lit = m_allocator.alloc<NodeExprIntLit>();
+            node_expr_int_lit->int_lit = consume();
+            auto node_expr = m_allocator.alloc<NodeExpr>();
+            node_expr->var = node_expr_int_lit;
+            return node_expr;
         }
         else if(peek().has_value() && peek().value().type == TokenType::ident) {
-            return NodeExpr{ NodeExprIdent{ consume() } };
+            auto node_expr_ident = m_allocator.alloc<NodeExprIdent>();
+            node_expr_ident->ident = consume();
+            auto node_expr = m_allocator.alloc<NodeExpr>();
+            node_expr->var = node_expr_ident;
+            return node_expr;
         }
         else {
             return {};
@@ -81,15 +88,15 @@ public:
     }
     
 
-    std::optional<NodeStmt> parse_stmt()
+    std::optional<NodeStmt*> parse_stmt()
     {
         while (peek().has_value()) {
             if (peek().value().type == TokenType::exit && peek(1).has_value() && peek(1).value().type == TokenType::open_paren) {
                 consume();
                 consume();
-                std::optional<NodeStmtExit> exit_node;
+                auto exit_node = m_allocator.alloc<NodeStmtExit>();
                 if (auto node_expr = parse_expr()) {
-                    exit_node = NodeStmtExit { node_expr.value() };
+                    exit_node->expr = node_expr.value();
                 }
                 else {
                     std::cerr << "Invalid expression" << std::endl;
@@ -108,15 +115,16 @@ public:
                     std::cerr << "Expected `;" << std::endl;
                     exit(EXIT_FAILURE);
                 }
-                return NodeStmt { exit_node.value() };
+                auto stmt = m_allocator.alloc<NodeStmt>();
+                stmt->expr = exit_node;
+                return stmt;
             } else if (peek().has_value() && peek().value().type == TokenType::make && peek(1).has_value() && peek(1).value().type == TokenType::ident && peek(2).has_value() && peek(2).value().type == TokenType::eq) {
                 consume();
-                NodeStmtMake stmt_let = NodeStmtMake{
-                    consume(),
-                };
+                NodeStmtMake* stmt_let = m_allocator.alloc<NodeStmtMake>();
+                stmt_let->ident = consume();
                 consume();
                 if (auto node_expr = parse_expr()) {
-                    stmt_let.expr = node_expr.value();
+                    stmt_let->expr = node_expr.value();
                 } else {
                     std::cerr << "Invalid expression after `make` statement" << std::endl;
                     exit(EXIT_FAILURE);
@@ -127,7 +135,9 @@ public:
                     std::cerr << "Expected `;` after `make` statement" << std::endl;
                     exit(EXIT_FAILURE);
                 } 
-                return NodeStmt { stmt_let };
+                auto stmt = m_allocator.alloc<NodeStmt>();
+                stmt->expr = stmt_let;
+                return stmt;
             }
             else{
                 std::cerr << "Invalid statement" << std::endl;
@@ -143,7 +153,7 @@ public:
         NodeProg prog;
         while (peek().has_value()) {
             if (auto stmt = parse_stmt()) {
-                prog.stmts.push_back(stmt.value());
+                prog.stmts.push_back(*stmt.value());
             } else {
                 return {};
             }
