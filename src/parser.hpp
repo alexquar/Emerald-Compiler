@@ -20,11 +20,6 @@ struct NodeStmtExit {
 };
 
 struct BinExprAdd {
-    NodeExpr left;
-    NodeExpr right;
-};
-
-struct BinExprMultiply {
     NodeExpr* left;
     NodeExpr* right;
 };
@@ -33,13 +28,18 @@ struct BinExprMultiply {
     NodeExpr* left;
     NodeExpr* right;
 };
+
 
 struct BinExpr {
-    std::variant<BinExprAdd, BinExprMultiply> var;
+    std::variant<BinExprAdd*, BinExprMultiply*> var;
+};
+
+struct NodeTerm {
+    std::variant<NodeExprIntLit*, NodeExprIdent*> var;
 };
 
 struct NodeExpr {
-    std::variant<NodeExprIntLit*, NodeExprIdent*, BinExpr*> var;
+    std::variant<NodeTerm*, BinExpr*> var;
 };
 
 struct NodeStmtMake {
@@ -51,7 +51,7 @@ struct NodeStmt{
     std::variant<NodeStmtExit*, NodeStmtMake*> expr;
 };
 struct NodeProg{
-    std::vector<NodeStmt> stmts;
+    std::vector<NodeStmt*> stmts;
 };
 
 
@@ -71,15 +71,19 @@ public:
         if (peek().has_value() && peek().value().type == TokenType::int_lit) {
             auto node_expr_int_lit = m_allocator.alloc<NodeExprIntLit>();
             node_expr_int_lit->int_lit = consume();
+            auto node_term = m_allocator.alloc<NodeTerm>();
+            node_term->var = node_expr_int_lit;
             auto node_expr = m_allocator.alloc<NodeExpr>();
-            node_expr->var = node_expr_int_lit;
+            node_expr->var = node_term;
             return node_expr;
         }
         else if(peek().has_value() && peek().value().type == TokenType::ident) {
             auto node_expr_ident = m_allocator.alloc<NodeExprIdent>();
             node_expr_ident->ident = consume();
+            auto node_term = m_allocator.alloc<NodeTerm>();
+            node_term->var = node_expr_ident;
             auto node_expr = m_allocator.alloc<NodeExpr>();
-            node_expr->var = node_expr_ident;
+            node_expr->var = node_term;
             return node_expr;
         }
         else {
@@ -153,7 +157,7 @@ public:
         NodeProg prog;
         while (peek().has_value()) {
             if (auto stmt = parse_stmt()) {
-                prog.stmts.push_back(*stmt.value());
+                prog.stmts.push_back(stmt.value());
             } else {
                 return {};
             }
